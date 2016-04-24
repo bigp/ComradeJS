@@ -11,7 +11,10 @@
     "less": "^2.6.1",
     "sass": "^0.5.0"
   },
-  "scripts":{
-	  "build": "node index.js"
+  "scripts": {
+    "build": "node --use_strict index.js"
+  },
+  "devDependencies": {
+    "cli-clear": "^1.0.4"
   }
 }

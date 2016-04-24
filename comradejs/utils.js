@@ -1,6 +1,6 @@
-var fs = require("fs");
+const fs = require("fs");
+const sysPath = require('path');
 
-global.clear = () => trace('\033[2J');
 RegExp.prototype['toJSON'] = function () {
     return this.source;
 };
@@ -87,6 +87,12 @@ global.fileExists = (path) => {
     }
 }
 
+global.fileEval = function(path) {
+    var fullPath = sysPath.resolve(path);
+    fullPath = require.resolve(fullPath);
+    delete require.cache[fullPath];
+    return require(fullPath);
+}
 
 global.fileRead = (path, replacements) => {
     if (replacements === void 0) { replacements = null; }
