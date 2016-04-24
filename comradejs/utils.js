@@ -1,5 +1,4 @@
 const fs = require("fs");
-const sysPath = require('path');
 
 RegExp.prototype['toJSON'] = function () {
     return this.source;
@@ -85,13 +84,6 @@ global.fileExists = (path) => {
     catch (e) {
         return false;
     }
-}
-
-global.fileEval = function(path) {
-    var fullPath = sysPath.resolve(path);
-    fullPath = require.resolve(fullPath);
-    delete require.cache[fullPath];
-    return require(fullPath);
 }
 
 global.fileRead = (path, replacements) => {
