@@ -1,22 +1,40 @@
-const fs = require("fs");
+'use strict';
+
+const fs = require('fs');
+const crypto = require('crypto');
 
 RegExp.prototype['toJSON'] = function () {
     return this.source;
 };
 
+global.trace = console.log.bind(console);
 global.traceJSON = (o) => trace(JSON.stringify(o, null, '  '));
-
-global.endsWith = (path, char) => {
+global.traceJSONLine = (o) => trace(JSON.stringify(o));
+global.getMD5 = function(str) {return crypto.createHash('md5').update(str).digest('hex');}
+global.whichever = function(a, b) {if(a!=null) return a; return b; };
+global.endsWith = function(path, char) {
     if (path.charAt(path.length - 1) != char)
         return path + char;
     return path;
-}
+};
 
-global.removeBeginsWith = (path, char) => {
+global.removeBeginsWith = function(path, char) {
     if (path.indexOf(char) == 0)
         return path.substr(char.length);
     return path;
-}
+};
+
+global.cleanPath = function() {
+    var results = '';
+    for(var a=0; a<arguments.length; a++) {
+        var part = arguments[a];
+        if(part==null) throw new Error("cleanPath error, passed 'null'!");
+        if(part.charAt(0)=='/') part = part.substr(1);
+        if(part.charAt(part.length-1)!='/') part += '/';
+        results += part;
+    }
+    return results;
+};
 
 global.resolveHandleBars = (str, obj) => {
     if (str == null)
@@ -76,6 +94,21 @@ global.getFiles = (path, exceptions, allFiles) => {
     });
     return allFiles;
 }
+
+global.getDirectories = (path) => {
+    path = endsWith(path, "/");
+    var results = [];
+    var files = fs.readdirSync(path);
+    files.forEach(function(file) {
+        if(file.indexOf(".")==0) return;
+        var fullpath = path + file;
+        if (fs.lstatSync(fullpath).isDirectory()) {
+            results.push(fullpath);
+        }
+    });
+    return results;
+}
+
 global.fileExists = (path) => {
     try {
         fs.statSync(path);
